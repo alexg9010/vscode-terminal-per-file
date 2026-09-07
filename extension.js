@@ -14,7 +14,9 @@ function getConfig() {
     tmuxSessionPrefix: cfg.get('tmuxSessionPrefix', 'vsc-'),
     tmuxBinary: cfg.get('tmuxBinary', 'tmux'),
     includeExtensions: cfg.get('includeExtensions', []),
-    startupCommands: cfg.get('startupCommands', {})
+    startupCommands: cfg.get('startupCommands', {}),
+    ignorePattern: cfg.get('ignorePattern', ''),
+    startupCommandRules: cfg.get('startupCommandRules', [])
   };
 }
 
@@ -31,12 +33,55 @@ function matchesIncludeFilter(filePath, includeExtensions) {
   return includeExtensions.some((entry) => entry.replace(/^\./, '').toLowerCase() === ext);
 }
 
-function startupCommandFor(filePath, startupCommands) {
+function startupCommandForExtension(filePath, startupCommands) {
   const ext = extensionOf(filePath);
   const key = Object.keys(startupCommands || {}).find(
     (entry) => entry.replace(/^\./, '').toLowerCase() === ext
   );
   return key ? startupCommands[key] : undefined;
+}
+
+// Compiled once per pattern string and cached (including failures), so a
+// broken regex only warns once instead of on every editor switch.
+const regexCache = new Map();
+function safeRegExp(pattern) {
+  if (regexCache.has(pattern)) return regexCache.get(pattern);
+  let re = null;
+  try {
+    re = new RegExp(pattern);
+  } catch (err) {
+    vscode.window.showErrorMessage(
+      `Terminal Per File: invalid regular expression "${pattern}" (${err.message})`
+    );
+  }
+  regexCache.set(pattern, re);
+  return re;
+}
+
+// Advanced escape hatch: ignore specific files by full-path regex even if
+// they'd otherwise pass includeExtensions.
+function isIgnoredByPattern(filePath, ignorePattern) {
+  if (!ignorePattern) return false;
+  const re = safeRegExp(ignorePattern);
+  return re ? re.test(filePath) : false;
+}
+
+// Advanced escape hatch: ordered { pattern, command } rules matched against
+// the full file path, first match wins. Falls back to startupCommands.
+function startupCommandForRules(filePath, rules) {
+  for (const rule of rules || []) {
+    if (!rule || !rule.pattern) continue;
+    const re = safeRegExp(rule.pattern);
+    if (re && re.test(filePath)) return rule.command;
+  }
+  return undefined;
+}
+
+function resolveStartupCommand(filePath, startupCommands, startupCommandRules) {
+  return (
+    startupCommandForRules(filePath, startupCommandRules) ||
+    startupCommandForExtension(filePath, startupCommands)
+  );
 }
 
 // The "key" is whatever a terminal is pinned to: a full file path in "file"
@@ -77,9 +122,18 @@ function activate(context) {
       if (!editor || !editor.document || editor.document.uri.scheme !== 'file') return;
 
       const filePath = editor.document.uri.fsPath;
-      const { scope, useTmux, tmuxSessionPrefix, tmuxBinary, includeExtensions, startupCommands } =
-        getConfig();
+      const {
+        scope,
+        useTmux,
+        tmuxSessionPrefix,
+        tmuxBinary,
+        includeExtensions,
+        startupCommands,
+        ignorePattern,
+        startupCommandRules
+      } = getConfig();
       if (!matchesIncludeFilter(filePath, includeExtensions)) return;
+      if (isIgnoredByPattern(filePath, ignorePattern)) return;
 
       const key = keyForEditor(filePath, scope);
       let terminal = fileTerminals.get(key);
@@ -101,7 +155,7 @@ function activate(context) {
           terminal.sendText(`${tmuxBinary} new-session -A -s ${sessionName}`);
         }
 
-        const startupCommand = startupCommandFor(filePath, startupCommands);
+        const startupCommand = resolveStartupCommand(filePath, startupCommands, startupCommandRules);
         if (startupCommand) terminal.sendText(startupCommand);
 
         fileTerminals.set(key, terminal);

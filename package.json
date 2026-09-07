@@ -65,6 +65,30 @@
           "additionalProperties": { "type": "string" },
           "default": {},
           "description": "Map of file extension (without the dot) to a shell command to run automatically the first time a terminal is created for that file type, e.g. { \"R\": \"R\", \"Rmd\": \"R\" } to drop into an R console. Only runs once, when the terminal is first created - not on later visits to the same file/directory."
+        },
+        "terminalPerFile.ignorePattern": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Advanced. A regular expression (JavaScript syntax) tested against the full file path. Matching files are left alone entirely, even if they match `includeExtensions`. See [docs/advanced-matching.md](https://github.com/alexg9010/vscode-terminal-per-file/blob/master/docs/advanced-matching.md)."
+        },
+        "terminalPerFile.startupCommandRules": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "required": ["pattern", "command"],
+            "properties": {
+              "pattern": {
+                "type": "string",
+                "description": "Regular expression (JavaScript syntax) tested against the full file path."
+              },
+              "command": {
+                "type": "string",
+                "description": "Shell command to run the first time a terminal is created for a matching file."
+              }
+            }
+          },
+          "markdownDescription": "Advanced. Ordered list of `{ pattern, command }` rules matched against the full file path - first match wins, checked before `startupCommands`. See [docs/advanced-matching.md](https://github.com/alexg9010/vscode-terminal-per-file/blob/master/docs/advanced-matching.md)."
         }
       }
     }

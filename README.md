@@ -47,6 +47,10 @@ drop straight into an R console for each one:
 }
 ```
 
+For regex-based matching (ignore files by pattern, or pick a startup command
+based on more than just the extension), see
+[docs/advanced-matching.md](docs/advanced-matching.md).
+
 ### File scope vs. directory scope
 
 <table>
@@ -77,6 +81,8 @@ drop straight into an R console for each one:
 | `terminalPerFile.tmuxBinary` | `string` | `"tmux"` | Path to the tmux executable, if it's not on your `PATH`. |
 | `terminalPerFile.includeExtensions` | `string[]` | `[]` | File extensions (without the dot) to pin terminals for, e.g. `["R", "Rmd"]`. Empty means every file (default); non-matching files are left alone entirely. |
 | `terminalPerFile.startupCommands` | `object` | `{}` | Map of file extension (without the dot) to a shell command to run the first time a terminal is created for that file type, e.g. `{ "R": "R", "Rmd": "R" }` to drop into an R console. |
+| `terminalPerFile.ignorePattern` | `string` | `""` | Advanced. Regex tested against the full file path; matches are left alone entirely. See [docs/advanced-matching.md](docs/advanced-matching.md). |
+| `terminalPerFile.startupCommandRules` | `{pattern, command}[]` | `[]` | Advanced. Ordered regex-to-command rules, checked before `startupCommands`. See [docs/advanced-matching.md](docs/advanced-matching.md). |
 
 ## Commands
 
