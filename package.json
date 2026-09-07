@@ -17,6 +17,36 @@
         "command": "terminalPerFile.closeForFile",
         "title": "Terminal Per File: Close Terminal For Current File"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Terminal Per File",
+      "properties": {
+        "terminalPerFile.scope": {
+          "type": "string",
+          "enum": ["file", "directory"],
+          "enumDescriptions": [
+            "One dedicated terminal per file.",
+            "One dedicated terminal shared by all files in the same directory."
+          ],
+          "default": "file",
+          "description": "Whether terminals are pinned per file or per directory."
+        },
+        "terminalPerFile.useTmux": {
+          "type": "boolean",
+          "default": false,
+          "description": "Back each file's terminal with a persistent tmux session instead of a plain VS Code terminal. The tmux server keeps running independently, so long-running processes survive closing the VS Code window and reattach automatically next time."
+        },
+        "terminalPerFile.tmuxSessionPrefix": {
+          "type": "string",
+          "default": "vsc-",
+          "description": "Prefix used when naming the tmux session for each file (only used when useTmux is enabled). Helps you tell these sessions apart in `tmux ls`."
+        },
+        "terminalPerFile.tmuxBinary": {
+          "type": "string",
+          "default": "tmux",
+          "description": "Path to the tmux executable, if it's not on your PATH."
+        }
+      }
+    }
   }
 }
