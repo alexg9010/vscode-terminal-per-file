@@ -1,0 +1,22 @@
+{
+  "name": "terminal-per-file",
+  "displayName": "Terminal Per File",
+  "description": "Pin a dedicated terminal to each file and auto-switch to it when the active editor changes.",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.80.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "terminalPerFile.toggleAutoSwitch",
+        "title": "Terminal Per File: Toggle Auto-Switch"
+      },
+      {
+        "command": "terminalPerFile.closeForFile",
+        "title": "Terminal Per File: Close Terminal For Current File"
+      }
+    ]
+  }
+}
