@@ -33,6 +33,19 @@ file becomes the active editor.
   reattach automatically next time.
 - **Commands** to pause auto-switching temporarily or close the terminal
   pinned to the current file.
+- **Per-extension filtering and startup commands** — only pin terminals for
+  specific file types, and optionally run a command (e.g. launch a REPL) the
+  first time a terminal is created for one.
+
+For example, to only pin terminals for R scripts and R Markdown files, and
+drop straight into an R console for each one:
+
+```json
+{
+  "terminalPerFile.includeExtensions": ["R", "Rmd"],
+  "terminalPerFile.startupCommands": { "R": "R", "Rmd": "R" }
+}
+```
 
 ### File scope vs. directory scope
 
@@ -62,6 +75,8 @@ file becomes the active editor.
 | `terminalPerFile.useTmux` | `boolean` | `false` | Back each pinned terminal with a persistent tmux session instead of a plain VS Code terminal. |
 | `terminalPerFile.tmuxSessionPrefix` | `string` | `"vsc-"` | Prefix used when naming the tmux session for each file/directory (only used when `useTmux` is enabled). |
 | `terminalPerFile.tmuxBinary` | `string` | `"tmux"` | Path to the tmux executable, if it's not on your `PATH`. |
+| `terminalPerFile.includeExtensions` | `string[]` | `[]` | File extensions (without the dot) to pin terminals for, e.g. `["R", "Rmd"]`. Empty means every file (default); non-matching files are left alone entirely. |
+| `terminalPerFile.startupCommands` | `object` | `{}` | Map of file extension (without the dot) to a shell command to run the first time a terminal is created for that file type, e.g. `{ "R": "R", "Rmd": "R" }` to drop into an R console. |
 
 ## Commands
 

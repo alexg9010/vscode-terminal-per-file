@@ -12,3 +12,5 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `Terminal Per File: Toggle Auto-Switch` command to pause/resume auto-switching.
 - `Terminal Per File: Close Terminal For Current File` command.
 - Optional tmux backing (`terminalPerFile.useTmux`) so long-running processes survive closing VS Code and reattach automatically, with configurable session prefix and tmux binary path.
+- `terminalPerFile.includeExtensions` to only pin terminals for specific file extensions, leaving other files untouched.
+- `terminalPerFile.startupCommands` to run a command (e.g. launch a REPL) the first time a terminal is created for a given file extension.

@@ -53,6 +53,18 @@
           "type": "string",
           "default": "tmux",
           "description": "Path to the tmux executable, if it's not on your PATH."
+        },
+        "terminalPerFile.includeExtensions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "File extensions (without the dot, e.g. \"R\", \"Rmd\") to pin terminals for. Leave empty to pin terminals for every file (default). Files that don't match are left alone: switching to them neither creates nor shows a pinned terminal."
+        },
+        "terminalPerFile.startupCommands": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "default": {},
+          "description": "Map of file extension (without the dot) to a shell command to run automatically the first time a terminal is created for that file type, e.g. { \"R\": \"R\", \"Rmd\": \"R\" } to drop into an R console. Only runs once, when the terminal is first created - not on later visits to the same file/directory."
         }
       }
     }

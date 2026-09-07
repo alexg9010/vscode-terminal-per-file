@@ -12,8 +12,31 @@ function getConfig() {
     scope: cfg.get('scope', 'file'),
     useTmux: cfg.get('useTmux', false),
     tmuxSessionPrefix: cfg.get('tmuxSessionPrefix', 'vsc-'),
-    tmuxBinary: cfg.get('tmuxBinary', 'tmux')
+    tmuxBinary: cfg.get('tmuxBinary', 'tmux'),
+    includeExtensions: cfg.get('includeExtensions', []),
+    startupCommands: cfg.get('startupCommands', {})
   };
+}
+
+// Extension keys/values are matched without their leading dot, case-insensitively,
+// so users can write "R" or ".R" in settings interchangeably.
+function extensionOf(filePath) {
+  return path.extname(filePath).slice(1).toLowerCase();
+}
+
+// An empty include list means "every file type" (backwards compatible default).
+function matchesIncludeFilter(filePath, includeExtensions) {
+  if (!includeExtensions || includeExtensions.length === 0) return true;
+  const ext = extensionOf(filePath);
+  return includeExtensions.some((entry) => entry.replace(/^\./, '').toLowerCase() === ext);
+}
+
+function startupCommandFor(filePath, startupCommands) {
+  const ext = extensionOf(filePath);
+  const key = Object.keys(startupCommands || {}).find(
+    (entry) => entry.replace(/^\./, '').toLowerCase() === ext
+  );
+  return key ? startupCommands[key] : undefined;
 }
 
 // The "key" is whatever a terminal is pinned to: a full file path in "file"
@@ -54,7 +77,10 @@ function activate(context) {
       if (!editor || !editor.document || editor.document.uri.scheme !== 'file') return;
 
       const filePath = editor.document.uri.fsPath;
-      const { scope, useTmux, tmuxSessionPrefix, tmuxBinary } = getConfig();
+      const { scope, useTmux, tmuxSessionPrefix, tmuxBinary, includeExtensions, startupCommands } =
+        getConfig();
+      if (!matchesIncludeFilter(filePath, includeExtensions)) return;
+
       const key = keyForEditor(filePath, scope);
       let terminal = fileTerminals.get(key);
 
@@ -74,6 +100,9 @@ function activate(context) {
           // and anything running inside it, survive closing VS Code.
           terminal.sendText(`${tmuxBinary} new-session -A -s ${sessionName}`);
         }
+
+        const startupCommand = startupCommandFor(filePath, startupCommands);
+        if (startupCommand) terminal.sendText(startupCommand);
 
         fileTerminals.set(key, terminal);
       }
