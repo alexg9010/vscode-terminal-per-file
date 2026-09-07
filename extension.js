@@ -5,6 +5,20 @@ const crypto = require('crypto');
 // Map: file path (string) -> vscode.Terminal
 const fileTerminals = new Map();
 let autoSwitchEnabled = true;
+let statusBarItem;
+
+function updateStatusBarItem() {
+  if (!statusBarItem) return;
+  if (autoSwitchEnabled) {
+    statusBarItem.text = '$(pinned) Terminal Per File';
+    statusBarItem.tooltip = 'Terminal Per File: auto-switch is on. Click to pause.';
+    statusBarItem.color = undefined;
+  } else {
+    statusBarItem.text = '$(pin) Terminal Per File (paused)';
+    statusBarItem.tooltip = 'Terminal Per File: auto-switch is paused. Click to resume.';
+    statusBarItem.color = new vscode.ThemeColor('statusBarItem.warningForeground');
+  }
+}
 
 function getConfig() {
   const cfg = vscode.workspace.getConfiguration('terminalPerFile');
@@ -103,6 +117,12 @@ function sessionNameForKey(key, prefix) {
 }
 
 function activate(context) {
+  statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  statusBarItem.command = 'terminalPerFile.toggleAutoSwitch';
+  updateStatusBarItem();
+  statusBarItem.show();
+  context.subscriptions.push(statusBarItem);
+
   // Clean up the map when a terminal is closed (e.g. process exited, or user closed it)
   context.subscriptions.push(
     vscode.window.onDidCloseTerminal((closedTerminal) => {
@@ -170,6 +190,7 @@ function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand('terminalPerFile.toggleAutoSwitch', () => {
       autoSwitchEnabled = !autoSwitchEnabled;
+      updateStatusBarItem();
       vscode.window.showInformationMessage(
         `Terminal Per File: auto-switch ${autoSwitchEnabled ? 'enabled' : 'disabled'}`
       );

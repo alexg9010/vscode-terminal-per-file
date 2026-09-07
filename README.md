@@ -36,6 +36,8 @@ file becomes the active editor.
 - **Per-extension filtering and startup commands** — only pin terminals for
   specific file types, and optionally run a command (e.g. launch a REPL) the
   first time a terminal is created for one.
+- **Status bar indicator** showing whether auto-switch is currently on or
+  paused — click it to toggle, same as the command.
 
 For example, to only pin terminals for R scripts and R Markdown files, and
 drop straight into an R console for each one:
@@ -90,6 +92,10 @@ based on more than just the extension), see
 |---|---|
 | `Terminal Per File: Toggle Auto-Switch` | Pause or resume automatically showing the pinned terminal when you switch editors. |
 | `Terminal Per File: Close Terminal For Current File` | Dispose the terminal pinned to the current file (or directory, in directory scope). |
+
+A status bar item on the right shows the current auto-switch state -
+`$(pinned) Terminal Per File` when on, `$(pin) Terminal Per File (paused)`
+(highlighted) when paused - and toggles it when clicked.
 
 > With `useTmux` enabled, closing the terminal only detaches the tmux client —
 > the session (and anything running in it) keeps going in the background and
