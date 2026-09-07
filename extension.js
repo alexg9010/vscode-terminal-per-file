@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const crypto = require('crypto');
+const { execFile } = require('child_process');
 
 // Map: file path (string) -> vscode.Terminal
 const fileTerminals = new Map();
@@ -30,7 +31,8 @@ function getConfig() {
     includeExtensions: cfg.get('includeExtensions', []),
     startupCommands: cfg.get('startupCommands', {}),
     ignorePattern: cfg.get('ignorePattern', ''),
-    startupCommandRules: cfg.get('startupCommandRules', [])
+    startupCommandRules: cfg.get('startupCommandRules', []),
+    respectGitignore: cfg.get('respectGitignore', true)
   };
 }
 
@@ -91,6 +93,18 @@ function startupCommandForRules(filePath, rules) {
   return undefined;
 }
 
+// Shells out to `git check-ignore` rather than reimplementing .gitignore
+// parsing - correctly handles nested .gitignore files, global excludes and
+// .git/info/exclude for free. Fails open (resolves false) outside a git
+// repo, without git installed, or on any other error.
+function isGitIgnored(filePath) {
+  return new Promise((resolve) => {
+    execFile('git', ['check-ignore', '-q', filePath], { cwd: path.dirname(filePath) }, (error) => {
+      resolve(!error);
+    });
+  });
+}
+
 function resolveStartupCommand(filePath, startupCommands, startupCommandRules) {
   return (
     startupCommandForRules(filePath, startupCommandRules) ||
@@ -137,7 +151,7 @@ function activate(context) {
 
   // Core behavior: when the active editor changes, show (or create) that file's terminal
   context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor((editor) => {
+    vscode.window.onDidChangeActiveTextEditor(async (editor) => {
       if (!autoSwitchEnabled) return;
       if (!editor || !editor.document || editor.document.uri.scheme !== 'file') return;
 
@@ -150,10 +164,15 @@ function activate(context) {
         includeExtensions,
         startupCommands,
         ignorePattern,
-        startupCommandRules
+        startupCommandRules,
+        respectGitignore
       } = getConfig();
       if (!matchesIncludeFilter(filePath, includeExtensions)) return;
       if (isIgnoredByPattern(filePath, ignorePattern)) return;
+      if (respectGitignore && (await isGitIgnored(filePath))) return;
+      // The user may have switched to a different editor while the check
+      // above was in flight - don't act on stale information.
+      if (vscode.window.activeTextEditor !== editor) return;
 
       const key = keyForEditor(filePath, scope);
       let terminal = fileTerminals.get(key);

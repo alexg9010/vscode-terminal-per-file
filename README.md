@@ -33,11 +33,13 @@ file becomes the active editor.
   reattach automatically next time.
 - **Commands** to pause auto-switching temporarily or close the terminal
   pinned to the current file.
+- **Status bar indicator** showing whether auto-switch is currently on or
+  paused — click it to toggle, same as the command.
+- **Gitignore-aware by default** — files git would ignore (via
+  `git check-ignore`) don't get a pinned terminal either.
 - **Per-extension filtering and startup commands** — only pin terminals for
   specific file types, and optionally run a command (e.g. launch a REPL) the
   first time a terminal is created for one.
-- **Status bar indicator** showing whether auto-switch is currently on or
-  paused — click it to toggle, same as the command.
 
 For example, to only pin terminals for R scripts and R Markdown files, and
 drop straight into an R console for each one:
@@ -83,6 +85,7 @@ based on more than just the extension), see
 | `terminalPerFile.tmuxBinary` | `string` | `"tmux"` | Path to the tmux executable, if it's not on your `PATH`. |
 | `terminalPerFile.includeExtensions` | `string[]` | `[]` | File extensions (without the dot) to pin terminals for, e.g. `["R", "Rmd"]`. Empty means every file (default); non-matching files are left alone entirely. |
 | `terminalPerFile.startupCommands` | `object` | `{}` | Map of file extension (without the dot) to a shell command to run the first time a terminal is created for that file type, e.g. `{ "R": "R", "Rmd": "R" }` to drop into an R console. |
+| `terminalPerFile.respectGitignore` | `boolean` | `true` | Skip files git would ignore (via `git check-ignore`) - no terminal is pinned for them. No effect outside a git repo or without git installed. |
 | `terminalPerFile.ignorePattern` | `string` | skips lock files, logs, minified/generated output, `node_modules`/`dist`/`.git` (see below) | Advanced. Regex tested against the full file path; matches are left alone entirely. Set to `""` to disable. See [docs/advanced-matching.md](docs/advanced-matching.md). |
 | `terminalPerFile.startupCommandRules` | `{pattern, command}[]` | `[]` | Advanced. Ordered regex-to-command rules, checked before `startupCommands`. See [docs/advanced-matching.md](docs/advanced-matching.md). |
 

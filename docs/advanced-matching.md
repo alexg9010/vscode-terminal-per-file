@@ -100,5 +100,6 @@ For a newly active file, in order:
 
 1. `includeExtensions` - if non-empty and the file's extension isn't listed, stop (untouched).
 2. `ignorePattern` - if set and it matches the full path, stop (untouched).
-3. A terminal is pinned/shown for the file (or its directory, in `"directory"` scope).
-4. If the terminal is newly created: `startupCommandRules` is checked first (first match wins), then `startupCommands` (by extension) if no rule matched.
+3. `respectGitignore` - if enabled (the default) and git reports the file as ignored, stop (untouched).
+4. A terminal is pinned/shown for the file (or its directory, in `"directory"` scope).
+5. If the terminal is newly created: `startupCommandRules` is checked first (first match wins), then `startupCommands` (by extension) if no rule matched.

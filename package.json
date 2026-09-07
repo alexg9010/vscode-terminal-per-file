@@ -66,6 +66,11 @@
           "default": {},
           "description": "Map of file extension (without the dot) to a shell command to run automatically the first time a terminal is created for that file type, e.g. { \"R\": \"R\", \"Rmd\": \"R\" } to drop into an R console. Only runs once, when the terminal is first created - not on later visits to the same file/directory."
         },
+        "terminalPerFile.respectGitignore": {
+          "type": "boolean",
+          "default": true,
+          "description": "Skip files ignored by git (via `git check-ignore`, so nested .gitignore files, global excludes and .git/info/exclude are all honored) - no terminal is pinned for them. Requires git; has no effect outside a git repository or if git isn't installed."
+        },
         "terminalPerFile.ignorePattern": {
           "type": "string",
           "default": "(^|/)(package-lock\\.json|yarn\\.lock|pnpm-lock\\.yaml|Cargo\\.lock|poetry\\.lock|Gemfile\\.lock|composer\\.lock)$|\\.(log|min\\.js|min\\.css|map)$|(^|/)(node_modules|dist|build|out|\\.next|\\.git)/",
