@@ -3,8 +3,16 @@
   "displayName": "Terminal Per File",
   "description": "Pin a dedicated terminal to each file and auto-switch to it when the active editor changes.",
   "version": "0.0.1",
+  "publisher": "local",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexg9010/vscode-terminal-per-file.git"
+  },
   "engines": { "vscode": "^1.80.0" },
   "categories": ["Other"],
+  "keywords": ["terminal", "tmux", "workflow", "productivity"],
   "activationEvents": ["onStartupFinished"],
   "main": "./extension.js",
   "contributes": {

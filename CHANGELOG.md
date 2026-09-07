@@ -1,0 +1,14 @@
+# Changelog
+
+All notable changes to the "Terminal Per File" extension are documented here.
+This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [0.0.1] - 2026-09-07
+
+### Added
+
+- Pin a dedicated terminal to each file; switching the active editor auto-shows (or creates) that file's terminal.
+- `terminalPerFile.scope` setting to pin per file or per directory.
+- `Terminal Per File: Toggle Auto-Switch` command to pause/resume auto-switching.
+- `Terminal Per File: Close Terminal For Current File` command.
+- Optional tmux backing (`terminalPerFile.useTmux`) so long-running processes survive closing VS Code and reattach automatically, with configurable session prefix and tmux binary path.
