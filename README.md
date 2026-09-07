@@ -83,7 +83,7 @@ based on more than just the extension), see
 | `terminalPerFile.tmuxBinary` | `string` | `"tmux"` | Path to the tmux executable, if it's not on your `PATH`. |
 | `terminalPerFile.includeExtensions` | `string[]` | `[]` | File extensions (without the dot) to pin terminals for, e.g. `["R", "Rmd"]`. Empty means every file (default); non-matching files are left alone entirely. |
 | `terminalPerFile.startupCommands` | `object` | `{}` | Map of file extension (without the dot) to a shell command to run the first time a terminal is created for that file type, e.g. `{ "R": "R", "Rmd": "R" }` to drop into an R console. |
-| `terminalPerFile.ignorePattern` | `string` | `""` | Advanced. Regex tested against the full file path; matches are left alone entirely. See [docs/advanced-matching.md](docs/advanced-matching.md). |
+| `terminalPerFile.ignorePattern` | `string` | skips lock files, logs, minified/generated output, `node_modules`/`dist`/`.git` (see below) | Advanced. Regex tested against the full file path; matches are left alone entirely. Set to `""` to disable. See [docs/advanced-matching.md](docs/advanced-matching.md). |
 | `terminalPerFile.startupCommandRules` | `{pattern, command}[]` | `[]` | Advanced. Ordered regex-to-command rules, checked before `startupCommands`. See [docs/advanced-matching.md](docs/advanced-matching.md). |
 
 ## Commands
@@ -92,6 +92,12 @@ based on more than just the extension), see
 |---|---|
 | `Terminal Per File: Toggle Auto-Switch` | Pause or resume automatically showing the pinned terminal when you switch editors. |
 | `Terminal Per File: Close Terminal For Current File` | Dispose the terminal pinned to the current file (or directory, in directory scope). |
+
+The shipped default for `terminalPerFile.ignorePattern` is:
+
+```
+(^|/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|Cargo\.lock|poetry\.lock|Gemfile\.lock|composer\.lock)$|\.(log|min\.js|min\.css|map)$|(^|/)(node_modules|dist|build|out|\.next|\.git)/
+```
 
 A status bar item on the right shows the current auto-switch state -
 `$(pinned) Terminal Per File` when on, `$(pin) Terminal Per File (paused)`

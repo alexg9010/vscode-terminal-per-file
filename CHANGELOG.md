@@ -16,3 +16,4 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `terminalPerFile.startupCommands` to run a command (e.g. launch a REPL) the first time a terminal is created for a given file extension.
 - Advanced regex-based matching: `terminalPerFile.ignorePattern` and `terminalPerFile.startupCommandRules`, documented in `docs/advanced-matching.md`.
 - Status bar item showing whether auto-switch is on or paused; clicking it toggles the same as the command.
+- `terminalPerFile.ignorePattern` now defaults to skipping common noise (lock files, logs, minified/generated output, `node_modules`/`dist`/`.git`) instead of an empty string; set it to `""` to opt out.

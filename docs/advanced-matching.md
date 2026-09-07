@@ -17,7 +17,7 @@ treated as never matching, rather than breaking the extension.
 
 A single regular expression. Any file whose full path matches is left alone
 entirely - no terminal is created or shown for it, even if it matches
-`includeExtensions`. Leave empty (the default) to not ignore anything beyond
+`includeExtensions`. Set to `""` to disable it and not ignore anything beyond
 what `includeExtensions` already excludes.
 
 Evaluated *after* `includeExtensions`, so it's a way to carve out exceptions
@@ -32,6 +32,42 @@ from an otherwise-included set:
 
 This pins terminals for `.R`/`.Rmd` files as usual, but skips anything under
 an `renv/` or `*_cache/` directory (e.g. R Markdown's knitr cache folders).
+
+### Shipped default
+
+Out of the box (`includeExtensions` empty, i.e. every file type in play),
+`ignorePattern` defaults to skipping common noise rather than pinning a
+terminal to literally everything you open:
+
+```
+(^|/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|Cargo\.lock|poetry\.lock|Gemfile\.lock|composer\.lock)$|\.(log|min\.js|min\.css|map)$|(^|/)(node_modules|dist|build|out|\.next|\.git)/
+```
+
+That's: lock files, `*.log`/`*.min.js`/`*.min.css`/`*.map`, and anything
+under `node_modules/`, `dist/`, `build/`, `out/`, `.next/`, or `.git/`.
+Deliberately narrow - things like `.json`, `.yaml`, `.env` or `.md` are left
+included by default, since plenty of workflows want a terminal open while
+editing config or docs too. Override or clear this setting if it excludes
+something you actually want a terminal for.
+
+### Example: R/Rmd only, the strict way
+
+If you set `includeExtensions: ["R", "Rmd"]` (see the main
+[README](../README.md)), you already get exactly this. As a pure regex
+alternative - e.g. if you'd rather keep everything in one `ignorePattern`
+knob instead of combining it with `includeExtensions` - a negative lookahead
+achieves the same thing by ignoring every path that does *not* end in `.R`
+or `.Rmd`:
+
+```json
+{
+  "terminalPerFile.ignorePattern": "^(?!.*\\.(R|Rmd)$).*$"
+}
+```
+
+This replaces the shipped default entirely, so nothing else on the noise
+list above is needed - excluding everything except `.R`/`.Rmd` already
+excludes lock files, logs, `node_modules`, etc. too.
 
 ## `terminalPerFile.startupCommandRules`
 

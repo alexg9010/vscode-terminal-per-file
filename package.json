@@ -68,8 +68,8 @@
         },
         "terminalPerFile.ignorePattern": {
           "type": "string",
-          "default": "",
-          "markdownDescription": "Advanced. A regular expression (JavaScript syntax) tested against the full file path. Matching files are left alone entirely, even if they match `includeExtensions`. See [docs/advanced-matching.md](https://github.com/alexg9010/vscode-terminal-per-file/blob/master/docs/advanced-matching.md)."
+          "default": "(^|/)(package-lock\\.json|yarn\\.lock|pnpm-lock\\.yaml|Cargo\\.lock|poetry\\.lock|Gemfile\\.lock|composer\\.lock)$|\\.(log|min\\.js|min\\.css|map)$|(^|/)(node_modules|dist|build|out|\\.next|\\.git)/",
+          "markdownDescription": "Advanced. A regular expression (JavaScript syntax) tested against the full file path. Matching files are left alone entirely, even if they match `includeExtensions`. Defaults to skipping common noise (lock files, logs, minified/generated output, `node_modules`/`dist`/`.git`); set to `\"\"` to disable. See [docs/advanced-matching.md](https://github.com/alexg9010/vscode-terminal-per-file/blob/master/docs/advanced-matching.md)."
         },
         "terminalPerFile.startupCommandRules": {
           "type": "array",
